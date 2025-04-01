@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{seo.title}}</title>
+  <style>
+    body { font-family: sans-serif; background: #fffaf2; text-align: center; padding: 2rem; }
+    #chatLog { background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 1rem; height: 200px; overflow-y: auto; margin-bottom: 1rem; }
+    input { padding: 0.5rem; width: 60%; }
+    button { padding: 0.5rem 1rem; background: #f08080; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>瓜瓜視覺生成 AI™ Beta</h1>
+  <div id="chatLog"></div>
+  <input id="chatInput" type="text" placeholder="跟瓜妹說點什麼..." />
+  <button onclick="talkToGuamei()">送出</button>
+  <script>
+    async function talkToGuamei() {
+      const input = document.getElementById("chatInput").value.trim();
+      if (!input) return;
+      const chatLog = document.getElementById("chatLog");
+      chatLog.innerHTML += `<p><strong>你：</strong>${input}</p>`;
+      document.getElementById("chatInput").value = "";
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: input })
+        });
+        const data = await res.json();
+        chatLog.innerHTML += `<p><strong>瓜妹：</strong>${data.reply}</p>`;
+        chatLog.scrollTop = chatLog.scrollHeight;
+      } catch (err) {
+        chatLog.innerHTML += `<p style="color:red;">瓜妹斷線了QQ</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
